@@ -48,7 +48,6 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     currentUser(_, __, { user }) {
-      console.log("current user", user);
       const { _id, role, name, email, createdAt } = user;
       return { id: _id, role, name, email, createdAt };
     },
@@ -68,7 +67,6 @@ const resolvers = {
         password,
         role,
       });
-      console.log("user", user);
 
       const token = user.getSignedToken();
 
