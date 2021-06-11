@@ -9,7 +9,7 @@ function startServer({ port = process.env.PORT } = {}) {
   const server = new ApolloServer({
     typeDefs,
     resolvers,
-    plugins: [customLogPlugin],
+    // plugins: [customLogPlugin],
     // context({ req }) {
     //   const token = req.headers.authorization;
     //   const user = getUserFromToken(token);
