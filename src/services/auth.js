@@ -1,4 +1,20 @@
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
+import User from "../models/User";
+
+/**
+ * will attemp to verify a jwt and find a user in the
+ * db associated with it. Catches any error and returns
+ * a null user
+ * @param {String} token jwt from client
+ */
+const getUserFromToken = (token) => {
+  try {
+    const user = jwt.verify(token, secret);
+    return User.findOne({ id: user.id });
+  } catch (e) {
+    return null;
+  }
+};
 
 /**
  * checks if the user is on the context object
@@ -15,4 +31,4 @@ const authenticated = (next) => (root, args, context, info) => {};
  */
 const authorized = (role, next) => (root, args, context, info) => {};
 
-export { authenticated, authorized };
+export { authenticated, authorized, getUserFromToken };

@@ -76,7 +76,8 @@ const resolvers = {
   },
 
   Product: {
-    category() {
+    category(parent, arg, ctx, info) {
+      console.log("parent", parent);
       return {
         id: 1,
         name: "Homeware",
