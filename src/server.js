@@ -12,9 +12,10 @@ import { Token } from "graphql";
 function startServer({ port = process.env.PORT } = {}) {
   const server = new ApolloServer({
     modules,
-    context({ req }) {
+    async context({ req }) {
       const token = req.headers.authorization;
-      const user = getUserFromToken(token);
+      const user = await getUserFromToken(token);
+      console.log("user ctx", user);
       return { user };
     },
     // typeDefs,

@@ -7,10 +7,11 @@ import User from "../models/User";
  * a null user
  * @param {String} token jwt from client
  */
-const getUserFromToken = (token) => {
+const getUserFromToken = async (token) => {
   try {
-    const user = jwt.verify(token, secret);
-    return User.findOne({ id: user.id });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("decoded", decoded);
+    return await User.findById(decoded.id);
   } catch (e) {
     return null;
   }

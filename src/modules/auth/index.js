@@ -9,7 +9,6 @@ const typeDefs = gql`
     name: String!
     createdAt: String!
     role: Role!
-    password: String
   }
 
   enum Role {
@@ -49,7 +48,9 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     currentUser(_, __, { user }) {
-      return { user };
+      console.log("current user", user);
+      const { _id, role, name, email, createdAt } = user;
+      return { id: _id, role, name, email, createdAt };
     },
   },
   Mutation: {
