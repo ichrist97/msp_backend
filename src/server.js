@@ -1,7 +1,7 @@
 import { ApolloServer } from "apollo-server";
 import typeDefs from "./typedefs";
 import resolvers from "./resolvers";
-import { customLogPlugin } from "./services/gqlPlugin";
+import { customLogPlugin, serverClosePlugin } from "./services/gqlPlugin";
 import logger from "loglevel";
 // import { createToken, getUserFromToken } from "./auth";
 
@@ -18,8 +18,7 @@ function startServer({ port = process.env.PORT } = {}) {
   });
 
   server.listen(port).then(({ url }) => {
-    console.log(`🚀 Server ready at ${url}`);
+    console.log(`Server ready at: ${url} 🚀 `.green.bold.underline);
   });
 }
-
 export { startServer };
