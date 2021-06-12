@@ -17,7 +17,16 @@ function startServer({ port = process.env.PORT } = {}) {
       return { user };
     },
     subscriptions: {
-      onConnect(params) {},
+      async onConnect(params) {
+        const token = params.authToken;
+        const user = await getUserFromToken(token);
+
+        if (!user) {
+          throw new Error("nope");
+        }
+        // subscription return gets merged with the context object
+        return { user };
+      },
     },
     // typeDefs,
     // resolvers,
