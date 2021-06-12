@@ -4,19 +4,7 @@ import { authenticated } from "../../services/auth";
 
 const typeDefs = gql`
   #----------
-  type User {
-    id: ID!
-    email: String!
-    name: String!
-    createdAt: String!
-    role: Role!
-  }
 
-  enum Role {
-    ADMIN
-    MEMBER
-    GUEST
-  }
   #-------
 
   type AuthUser {

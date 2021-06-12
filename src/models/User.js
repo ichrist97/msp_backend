@@ -37,6 +37,10 @@ const UserSchema = new Schema({
 
 //encrypt password with bcrypt
 UserSchema.pre("save", async function (next) {
+  // if the user password is not modified just call next middleware
+  if (!this.isModified("password")) {
+    next();
+  }
   const salt = await bcrypt.genSalt(10);
 
   //hash password with salt
@@ -50,6 +54,17 @@ UserSchema.methods.getSignedToken = function () {
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE_TIME,
   });
+};
+
+// formate user
+UserSchema.methods.format = function () {
+  var obj = this.toObject();
+
+  //Rename fields
+  obj.id = obj._id;
+  delete obj._id;
+
+  return obj;
 };
 
 //match user password from request to hashed password in db

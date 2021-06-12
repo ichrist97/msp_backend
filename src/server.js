@@ -10,7 +10,7 @@ function startServer({ port = process.env.PORT } = {}) {
     async context({ req }) {
       const token = req.headers.authorization;
       const user = await getUserFromToken(token);
-      console.log("user ctx", user);
+      // console.log("user ctx", user);
       return { user };
     },
     // typeDefs,
