@@ -5,13 +5,20 @@ import { typeDefs, resolvers } from "./modules";
 import { getUserFromToken } from "./services/auth";
 
 // import directive visitor classes
-import { LogDirective, FormatDateDirective } from "./directives/visitors";
+import {
+  LogDirective,
+  FormatDateDirective,
+  AuthenticationDirective,
+  AuthorizationDirective,
+} from "./directives/visitors";
 
 function startServer({ port = process.env.PORT } = {}) {
   const server = new ApolloServer({
     schemaDirectives: {
       log: LogDirective,
       formatDate: FormatDateDirective,
+      auth: AuthenticationDirective,
+      authorization: AuthorizationDirective,
     },
     typeDefs,
     resolvers,

@@ -27,12 +27,3 @@ const resolvers = _.merge(
 );
 
 export { typeDefs, resolvers };
-
-// export default [
-//   productModule,
-//   categoryModule,
-//   authModule,
-//   userModule,
-//   itemModule,
-//   directiveModule,
-// ];
