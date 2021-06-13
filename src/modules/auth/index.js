@@ -20,11 +20,11 @@ const typeDefs = gql`
     password: String!
   }
 
-  extend type Query {
-    currentUser: User! @log
+  type Query {
+    currentUser: User!
   }
 
-  extend type Mutation {
+  type Mutation {
     register(input: RegisterInput!): AuthUser!
     login(input: LoginInput!): AuthUser!
   }
@@ -79,4 +79,9 @@ const resolvers = {
   },
 };
 
-export default { typeDefs, resolvers };
+const auth = {
+  typeDefs,
+  resolvers,
+};
+
+export default auth;

@@ -39,4 +39,5 @@ const resolvers = {
   },
 };
 
-export default { typeDefs, resolvers };
+const product = { typeDefs, resolvers };
+export default product;

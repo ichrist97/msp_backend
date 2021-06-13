@@ -5,7 +5,7 @@ import { formatDate } from "../utils";
 class LogDirective extends SchemaDirectiveVisitor {
   visitFieldDefinition(field) {
     const resolver = field.resolve || defaultFieldResolver;
-    field.resolve = (args) => {
+    field.resolve = (...args) => {
       console.log("hi");
       return resolver.apply(this, args);
     };

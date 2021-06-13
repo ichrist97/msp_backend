@@ -86,4 +86,5 @@ const resolvers = {
   },
 };
 
-export default { typeDefs, resolvers };
+const category = { typeDefs, resolvers };
+export default category;

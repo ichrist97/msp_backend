@@ -8,7 +8,7 @@ const typeDefs = gql`
     task: String
   }
 
-  extend type Subscription {
+  type Subscription {
     newItem: Item!
   }
 
@@ -32,4 +32,5 @@ const resolvers = {
   },
 };
 
-export default { typeDefs, resolvers };
+const items = { typeDefs, resolvers };
+export default items;

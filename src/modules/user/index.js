@@ -3,8 +3,6 @@ import User from "../../models/User";
 import { authenticated } from "../../services/auth";
 
 const typeDefs = gql`
-  directive @log on FIELD_DEFINITION
-
   type User {
     id: ID! @log
     email: String!
@@ -55,4 +53,5 @@ const resolvers = {
   },
 };
 
-export default { typeDefs, resolvers };
+const user = { typeDefs, resolvers };
+export default user;

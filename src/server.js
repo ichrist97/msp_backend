@@ -1,5 +1,5 @@
 import { ApolloServer } from "apollo-server";
-import modules from "./modules";
+import { typeDefs, resolvers } from "./modules";
 // import { customLogPlugin } from "./services/gqlPlugin";
 
 import { getUserFromToken } from "./services/auth";
@@ -13,7 +13,8 @@ function startServer({ port = process.env.PORT } = {}) {
       log: LogDirective,
       formatDate: FormatDateDirective,
     },
-    modules,
+    typeDefs,
+    resolvers,
     async context({ connection, req }) {
       if (connection) {
         return { ...connection.context };
