@@ -3,10 +3,6 @@ import User from "../../models/User";
 import { authenticated } from "../../services/auth";
 
 const typeDefs = gql`
-  #----------
-
-  #-------
-
   type AuthUser {
     token: String!
     user: User!
@@ -25,7 +21,7 @@ const typeDefs = gql`
   }
 
   extend type Query {
-    currentUser: User!
+    currentUser: User! @log
   }
 
   extend type Mutation {

@@ -3,11 +3,13 @@ import User from "../../models/User";
 import { authenticated } from "../../services/auth";
 
 const typeDefs = gql`
+  directive @log on FIELD_DEFINITION
+
   type User {
-    id: ID!
+    id: ID! @log
     email: String!
     name: String!
-    createdAt: String!
+    createdAt: String! @formatDate
     role: Role!
   }
 
@@ -33,7 +35,6 @@ const resolvers = {
   Mutation: {
     updateUser: authenticated(async (_, { input }, { user }, info) => {
       const _user = await User.findById(user._id);
-      console.log("user", user);
 
       if (_user) {
         _user.name = input.name || _user.name;

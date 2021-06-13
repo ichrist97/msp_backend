@@ -1,11 +1,18 @@
-import { ApolloServer, PubSub } from "apollo-server";
+import { ApolloServer } from "apollo-server";
 import modules from "./modules";
 // import { customLogPlugin } from "./services/gqlPlugin";
 
 import { getUserFromToken } from "./services/auth";
 
+// import directive visitor classes
+import { LogDirective, FormatDateDirective } from "./directives/visitors";
+
 function startServer({ port = process.env.PORT } = {}) {
   const server = new ApolloServer({
+    schemaDirectives: {
+      log: LogDirective,
+      formatDate: FormatDateDirective,
+    },
     modules,
     async context({ connection, req }) {
       if (connection) {
