@@ -1,6 +1,5 @@
 import { gql } from "apollo-server";
 import User from "../../models/User";
-import { authenticated } from "../../services/auth";
 
 const typeDefs = gql`
   type AuthUser {
@@ -21,7 +20,7 @@ const typeDefs = gql`
   }
 
   type Query {
-    currentUser: User!
+    currentUser: User! @auth @authorization(role: MEMBER)
   }
 
   type Mutation {
@@ -32,10 +31,10 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    currentUser: authenticated((_, __, { user }) => {
+    currentUser(_, __, { user }) {
       const { _id, role, name, email, createdAt } = user;
       return { id: _id, role, name, email, createdAt };
-    }),
+    },
   },
   Mutation: {
     async register(_, { input }) {

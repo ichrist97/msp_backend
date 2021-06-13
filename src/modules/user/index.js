@@ -1,6 +1,5 @@
 import { gql } from "apollo-server";
 import User from "../../models/User";
-import { authenticated } from "../../services/auth";
 
 const typeDefs = gql`
   type User {
@@ -25,13 +24,13 @@ const typeDefs = gql`
   }
 
   extend type Mutation {
-    updateUser(input: UpdateUserInput!): User
+    updateUser(input: UpdateUserInput!): User @auth
   }
 `;
 
 const resolvers = {
   Mutation: {
-    updateUser: authenticated(async (_, { input }, { user }, info) => {
+    async updateUser(_, { input }, { user }, info) {
       const _user = await User.findById(user._id);
 
       if (_user) {
@@ -49,7 +48,7 @@ const resolvers = {
       } else {
         throw Error("user not found");
       }
-    }),
+    },
   },
 };
 
