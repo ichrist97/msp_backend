@@ -22,7 +22,8 @@
     "graphql": "^15.5.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
-    "mongoose": "^5.12.13"
+    "mongoose": "^5.12.13",
+    "node-geocoder": "^3.27.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.3",
