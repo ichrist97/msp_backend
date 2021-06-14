@@ -10,6 +10,7 @@ import {
   FormatDateDirective,
   AuthenticationDirective,
   AuthorizationDirective,
+  RestDirective,
 } from "./directives/visitors";
 
 function startServer({ port = process.env.PORT } = {}) {
@@ -19,6 +20,7 @@ function startServer({ port = process.env.PORT } = {}) {
       formatDate: FormatDateDirective,
       auth: AuthenticationDirective,
       authorization: AuthorizationDirective,
+      rest: RestDirective,
     },
     typeDefs,
     resolvers,

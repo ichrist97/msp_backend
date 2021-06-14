@@ -5,6 +5,7 @@ const typeDefs = gql`
   directive @formatDate(format: String = "dd MMM yyy") on FIELD_DEFINITION
   directive @auth on FIELD_DEFINITION
   directive @authorization(role: Role! = ADMIN) on FIELD_DEFINITION
+  directive @rest(url: String) on FIELD_DEFINITION
 `;
 
 const directives = { typeDefs };

@@ -56,9 +56,17 @@ class AuthorizationDirective extends SchemaDirectiveVisitor {
   }
 }
 
+class RestDirective extends SchemaDirectiveVisitor {
+  visitFieldDefinition(field) {
+    const { url } = this.args;
+    field.resolve = () => fetch(url);
+  }
+}
+
 export {
   LogDirective,
   FormatDateDirective,
   AuthenticationDirective,
   AuthorizationDirective,
+  RestDirective,
 };
