@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const komyunitiSchema = new mongoose.Schema(
+const KomyunitiSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -25,4 +25,11 @@ const komyunitiSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Komyuniti", komyunitiSchema);
+// Cascade delete Events when a Komyuniti is deleted
+KomyunitiSchema.pre("remove", async function (next) {
+  console.log(`Events being removed from Komyuniti ${this._id}`);
+  await this.model("Event").deleteMany({ komyuniti: this._id });
+  next();
+});
+
+export default mongoose.model("Komyuniti", KomyunitiSchema);
