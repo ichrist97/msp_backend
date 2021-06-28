@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import geocoder from "../utils/geocoder";
 
 const UserSchema = new Schema({
   name: {
@@ -17,6 +18,30 @@ const UserSchema = new Schema({
       "Please add a valid email",
     ],
   },
+  // gets passed via user input
+  address: {
+    type: String,
+  },
+  // gets generated via code
+  location: [
+    {
+      // GeoJSON Point
+      type: {
+        type: String,
+        enum: ["Point"],
+      },
+      coordinates: {
+        type: [Number],
+        index: "2dsphere",
+      },
+      formattedAddress: String,
+      street: String,
+      city: String,
+      state: String,
+      zipcode: String,
+      country: String,
+    },
+  ],
   role: {
     type: String,
     enum: ["ADMIN", "MEMBER", "GUEST"],
@@ -71,5 +96,24 @@ UserSchema.methods.format = function () {
 UserSchema.methods.matchPassword = async function (requestPassword) {
   return await bcrypt.compare(requestPassword, this.password);
 };
+
+// Geocode & create location field
+UserSchema.pre("save", async function (next) {
+  const loc = await geocoder.geocode(this.address);
+  this.location = {
+    type: "Point",
+    coordinates: [loc[0].longitude, loc[0].latitude],
+    formattedAddress: loc[0].formattedAddress,
+    street: loc[0].streetName,
+    city: loc[0].city,
+    state: loc[0].stateCode,
+    zipcode: loc[0].zipcode,
+    country: loc[0].countryCode,
+  };
+
+  // Do not save address in DB
+  this.address = undefined;
+  next();
+});
 
 export default mongoose.model("User", UserSchema);

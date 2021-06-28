@@ -1,4 +1,8 @@
 import NodeGeocoder from "node-geocoder";
+import dotenv from "dotenv";
+
+//load environment variables
+dotenv.config({ path: "./config/config.env" });
 
 const options = {
   provider: process.env.GEOCODER_PROVIDER,

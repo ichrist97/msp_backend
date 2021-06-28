@@ -12,6 +12,7 @@ const typeDefs = gql`
     email: String!
     password: String!
     role: Role!
+    address: String
   }
 
   input LoginInput {
@@ -50,7 +51,7 @@ const resolvers = {
   },
   Mutation: {
     async register(_, { input }) {
-      const { name, email, password, role } = input;
+      const { name, email, password, role, address } = input;
       const existing = await User.findOne({ email });
 
       if (existing) {
@@ -62,6 +63,7 @@ const resolvers = {
         email,
         password,
         role,
+        address,
       });
 
       const token = user.getSignedToken();
