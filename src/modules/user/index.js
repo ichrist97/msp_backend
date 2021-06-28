@@ -27,6 +27,13 @@ const typeDefs = gql`
     id: String
   }
 
+  input CreateUserInput {
+    name: String!
+    email: String!
+    password: String!
+    role: Role!
+  }
+
   extend type Query {
     users: [User!]! @auth
     user(input: GetUserInput): User! @auth
@@ -34,6 +41,7 @@ const typeDefs = gql`
 
   extend type Mutation {
     updateUser(input: UpdateUserInput!): User @auth @authorization(role: MEMBER)
+    createUser(input: CreateUserInput!): User
   }
 `;
 
@@ -68,6 +76,11 @@ const resolvers = {
       } else {
         throw Error("user not found");
       }
+    },
+    async createUser(_, { input }, __) {
+      const _user = await User.create(input);
+
+      return _user;
     },
   },
 };
