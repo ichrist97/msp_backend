@@ -24,6 +24,11 @@ const typeDefs = gql`
     name: String
   }
 
+  input UpdatePasswordInput {
+    currentPassword: String!
+    newPassword: String!
+  }
+
   type Query {
     currentUser: User! @auth
   }
@@ -32,6 +37,7 @@ const typeDefs = gql`
     register(input: RegisterInput!): AuthUser!
     login(input: LoginInput!): AuthUser!
     updateDetails(input: UpdateUserDetailsInput!): User! @auth
+    updatePassword(input: UpdatePasswordInput!): AuthUser! @auth
   }
 `;
 
@@ -96,6 +102,26 @@ const resolvers = {
       } else {
         throw Error("user not found");
       }
+    },
+    async updatePassword(_, { input }, { user }) {
+      const { currentPassword, newPassword } = input;
+
+      // create user
+      const _user = await User.findById(user.id).select("+password");
+
+      // check current password
+      if (!(await _user.matchPassword(currentPassword))) {
+        throw Error("Password is incorrect");
+      }
+
+      _user.password = newPassword;
+      await _user.save();
+
+      // create token
+      const token = _user.getSignedToken();
+      console.log("user ...", _user);
+
+      return { token, user: _user };
     },
   },
 };
