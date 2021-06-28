@@ -23,12 +23,22 @@ const typeDefs = gql`
     password: String
   }
 
+  extend type Query {
+    users: [User!] @auth
+  }
+
   extend type Mutation {
     updateUser(input: UpdateUserInput!): User @auth @authorization(role: MEMBER)
   }
 `;
 
 const resolvers = {
+  Query: {
+    async users(_, __, { user }) {
+      const users = await User.find({});
+      return users;
+    },
+  },
   Mutation: {
     async updateUser(_, { input }, { user }, info) {
       const _user = await User.findById(user._id);
