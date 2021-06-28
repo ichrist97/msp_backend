@@ -34,6 +34,10 @@ const typeDefs = gql`
     role: Role!
   }
 
+  input DeleteUserInput {
+    id: String
+  }
+
   extend type Query {
     users: [User!]! @auth
     user(input: GetUserInput): User! @auth
@@ -42,6 +46,7 @@ const typeDefs = gql`
   extend type Mutation {
     updateUser(input: UpdateUserInput!): User @auth @authorization(role: MEMBER)
     createUser(input: CreateUserInput!): User
+    deleteUser(input: DeleteUserInput!): User
   }
 `;
 
@@ -81,6 +86,12 @@ const resolvers = {
       const _user = await User.create(input);
 
       return _user;
+    },
+
+    async deleteUser(_, { input }, __) {
+      const { id } = input;
+      const user = await User.findByIdAndDelete(id);
+      return user;
     },
   },
 };
