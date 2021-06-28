@@ -23,8 +23,13 @@ const typeDefs = gql`
     password: String
   }
 
+  input GetUserInput {
+    id: String
+  }
+
   extend type Query {
-    users: [User!] @auth
+    users: [User!]! @auth
+    user(input: GetUserInput): User! @auth
   }
 
   extend type Mutation {
@@ -37,6 +42,11 @@ const resolvers = {
     async users(_, __, { user }) {
       const users = await User.find({});
       return users;
+    },
+    async user(_, { input }, { user }) {
+      const { id } = input;
+      const _user = User.findById(id);
+      return _user;
     },
   },
   Mutation: {
