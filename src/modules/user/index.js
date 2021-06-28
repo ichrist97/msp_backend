@@ -24,7 +24,7 @@ const typeDefs = gql`
   }
 
   extend type Mutation {
-    updateUser(input: UpdateUserInput!): User @auth
+    updateUser(input: UpdateUserInput!): User @auth @authorization(role: MEMBER)
   }
 `;
 

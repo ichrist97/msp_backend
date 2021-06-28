@@ -19,13 +19,19 @@ const typeDefs = gql`
     password: String!
   }
 
+  input UpdateUserDetailsInput {
+    email: String
+    name: String
+  }
+
   type Query {
-    currentUser: User! @auth @authorization(role: MEMBER)
+    currentUser: User! @auth
   }
 
   type Mutation {
     register(input: RegisterInput!): AuthUser!
     login(input: LoginInput!): AuthUser!
+    updateDetails(input: UpdateUserDetailsInput!): User! @auth
   }
 `;
 
@@ -74,6 +80,22 @@ const resolvers = {
 
       const token = user.getSignedToken();
       return { token, user };
+    },
+    async updateDetails(_, { input }, { user }) {
+      const { name, email } = input;
+      const _user = await User.findById(user._id);
+
+      if (_user) {
+        _user.name = name || _user.name;
+        _user.email = email || _user.email;
+
+        const updatedUser = await _user.save();
+        const formatedUser = updatedUser.format();
+
+        return formatedUser;
+      } else {
+        throw Error("user not found");
+      }
     },
   },
 };
