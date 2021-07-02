@@ -8,6 +8,7 @@ const typeDefs = gql`
     name: String!
     createdAt: String! @formatDate
     role: Role!
+    friends: [User!]
   }
 
   enum Role {
@@ -38,6 +39,10 @@ const typeDefs = gql`
     id: String
   }
 
+  input AddFriendInput {
+    userId: String
+  }
+
   extend type Query {
     users: [User!]! @auth
     user(input: GetUserInput): User! @auth
@@ -47,18 +52,19 @@ const typeDefs = gql`
     updateUser(input: UpdateUserInput!): User @auth @authorization(role: MEMBER)
     createUser(input: CreateUserInput!): User
     deleteUser(input: DeleteUserInput!): User
+    addFriend(input: AddFriendInput!): User @auth
   }
 `;
 
 const resolvers = {
   Query: {
     async users(_, __, { user }) {
-      const users = await User.find({});
+      const users = await User.find({}).populate("friends");
       return users;
     },
     async user(_, { input }, { user }) {
       const { id } = input;
-      const _user = User.findById(id);
+      const _user = User.findById(id).populate("friends");
       return _user;
     },
   },
@@ -92,6 +98,13 @@ const resolvers = {
       const { id } = input;
       const user = await User.findByIdAndDelete(id);
       return user;
+    },
+
+    async addFriend(_, { input }, { user }, __) {
+      const { userId } = input;
+      user.friends.push(userId);
+      const _user = await user.save();
+      return _user;
     },
   },
 };

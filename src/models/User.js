@@ -22,6 +22,7 @@ const UserSchema = new Schema({
   address: {
     type: String,
   },
+  friends: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
   // gets generated via code
   location: [
     {
@@ -99,6 +100,9 @@ UserSchema.methods.matchPassword = async function (requestPassword) {
 
 // Geocode & create location field
 UserSchema.pre("save", async function (next) {
+  if (!this.isModified("address")) {
+    next();
+  }
   const loc = await geocoder.geocode(this.address);
   this.location = {
     type: "Point",
