@@ -44,9 +44,8 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    currentUser(_, __, { user }) {
-      const { _id, role, name, email, createdAt } = user;
-      return { id: _id, role, name, email, createdAt };
+    async currentUser(_, __, { user }) {
+      return await User.findById(user.id);
     },
   },
   Mutation: {
@@ -98,9 +97,10 @@ const resolvers = {
         _user.email = email || _user.email;
 
         const updatedUser = await _user.save();
-        const formatedUser = updatedUser.format();
+        // const formatedUser = updatedUser.format();
 
-        return formatedUser;
+        console.log("formatted user:", updatedUser);
+        return updatedUser;
       } else {
         throw Error("user not found");
       }

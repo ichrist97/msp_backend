@@ -120,4 +120,19 @@ UserSchema.pre("save", async function (next) {
   next();
 });
 
+// always populate friends of a user
+var autoPopulateFriends = function (next) {
+  this.populate("friends");
+  next();
+};
+
+UserSchema.pre("findOne", autoPopulateFriends)
+  .pre("find", autoPopulateFriends)
+  .pre("findById", autoPopulateFriends)
+  .post("save", function (doc, next) {
+    doc.populate("friends").execPopulate(function () {
+      next();
+    });
+  });
+
 export default mongoose.model("User", UserSchema);

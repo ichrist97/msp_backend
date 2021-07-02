@@ -3,7 +3,7 @@ import User from "../../models/User";
 
 const typeDefs = gql`
   type User {
-    id: ID! @log
+    _id: ID! @log
     email: String!
     name: String!
     createdAt: String! @formatDate
@@ -59,13 +59,11 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     async users(_, __, { user }) {
-      const users = await User.find({}).populate("friends");
-      return users;
+      return await User.find({});
     },
     async user(_, { input }, { user }) {
       const { id } = input;
-      const _user = User.findById(id).populate("friends");
-      return _user;
+      return await User.findById(id);
     },
   },
   Mutation: {
@@ -81,9 +79,9 @@ const resolvers = {
         }
 
         const updatedUser = await _user.save();
-        const formatedUser = updatedUser.format();
+        // const formatedUser = updatedUser.format();
 
-        return formatedUser;
+        return updatedUser;
       } else {
         throw Error("user not found");
       }
