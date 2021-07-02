@@ -135,4 +135,11 @@ UserSchema.pre("findOne", autoPopulateFriends)
     });
   });
 
+// Cascade delete friend when a User is deleted
+UserSchema.pre("remove", async function (next) {
+  console.log(`friend being removed from User ${this._id}`);
+  await this.model("User").updateMany({}, { $pull: { friends: this._id } });
+  next();
+});
+
 export default mongoose.model("User", UserSchema);

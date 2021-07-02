@@ -94,8 +94,14 @@ const resolvers = {
 
     async deleteUser(_, { input }, __) {
       const { id } = input;
-      const user = await User.findByIdAndDelete(id);
-      return user;
+
+      const user = await User.findById(id);
+
+      if (!user) {
+        throw Error(`No user with the id of ${id}`);
+      }
+      const removedUser = await user.remove();
+      return removedUser;
     },
 
     async addFriend(_, { input }, { user }, __) {
