@@ -106,6 +106,12 @@ const resolvers = {
 
     async addFriend(_, { input }, { user }, __) {
       const { userId } = input;
+
+      // check if user exists
+      await User.findById(userId).catch(() => {
+        throw new Error("User does not exist")
+      })
+
       user.friends.push(userId);
       const _user = await user.save();
       return _user;
