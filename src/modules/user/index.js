@@ -63,7 +63,13 @@ const resolvers = {
     },
     async user(_, { input }, { user }) {
       const { id } = input;
-      return await User.findById(id);
+      const _user = await User.findById(id).catch(() => {
+        throw new Error("Incorrect ObjectId provided")
+      })
+      if (!_user) {
+        throw new Error("User is not existing")
+      }
+      return _user
     },
   },
   Mutation: {
