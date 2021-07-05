@@ -163,8 +163,11 @@ const resolvers = {
       });
 
       // save file to user
-      // save filename
-      await User.findByIdAndUpdate(user._id, { image: customFileName });
+      const imageUrl = `${process.env.SERVER_URL}:${process.env.PORT}/uploads/users/${customFileName}`;
+      await User.findByIdAndUpdate(user._id, {
+        image: customFileName,
+        imageUrl,
+      });
 
       return true;
     },

@@ -27,6 +27,9 @@ const UserSchema = new Schema({
     type: String,
     default: "no-photo.jpg",
   },
+  imageUrl: {
+    type: String,
+  },
   // gets generated via code
   location: [
     {
