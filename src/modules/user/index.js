@@ -1,9 +1,14 @@
+import path from "path";
+import { createWriteStream } from "fs";
 import { gql } from "apollo-server-express";
 import User from "../../models/User";
-import { createWriteStream } from "fs";
-import path from "path";
+import {
+  GraphQLUpload, // The GraphQL "Upload" Scalar
+} from "graphql-upload";
 
 const typeDefs = gql`
+  scalar Upload
+
   type User {
     _id: ID! @log
     email: String!
@@ -63,6 +68,9 @@ const typeDefs = gql`
 `;
 
 const resolvers = {
+  // Add this line to use the `GraphQLUpload` from `graphql-upload`.
+  Upload: GraphQLUpload,
+
   Query: {
     async users(_, __, { user }) {
       return await User.find({});
@@ -130,7 +138,7 @@ const resolvers = {
     },
     async uploadUserImage(_, { input }, { user }, __) {
       const { file } = input;
-      const { createReadStream, filename } = file;
+      const { createReadStream, filename, mimetype } = await file;
 
       console.log("uploaded file", file);
 

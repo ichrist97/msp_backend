@@ -3,6 +3,9 @@ import { ApolloServer } from "apollo-server-express";
 import { typeDefs, resolvers } from "./modules";
 // import { customLogPlugin } from "./services/gqlPlugin";
 import express from "express";
+import {
+  graphqlUploadExpress, // The Express middleware.
+} from "graphql-upload";
 
 import { getUserFromToken } from "./services/auth";
 
@@ -26,6 +29,10 @@ function startServer({ port = process.env.PORT } = {}) {
     },
     typeDefs,
     resolvers,
+    // Disable the built in file upload implementation that uses an outdated
+    // `graphql-upload` version, see:
+    // https://github.com/apollographql/apollo-server/issues/3508#issuecomment-662371289
+    uploads: false,
     async context({ connection, req }) {
       if (connection) {
         return { ...connection.context };
@@ -58,6 +65,8 @@ function startServer({ port = process.env.PORT } = {}) {
   // });
 
   const app = express();
+  app.use(graphqlUploadExpress());
+
   app.use(
     "/uploads",
     express.static(path.join(__dirname, "../public/uploads"))
