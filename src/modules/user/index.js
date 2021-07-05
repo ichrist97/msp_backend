@@ -140,12 +140,24 @@ const resolvers = {
       const { file } = input;
       const { createReadStream, filename, mimetype } = await file;
 
+      // Make sure the image is a photo
+      if (!mimetype.startsWith("image")) {
+        throw new Error(`Please upload an image file`);
+      }
+
+      // Create custom filename
+      const customFileName = `photo_${user._id}${path.parse(filename).ext}`;
+
       console.log("uploaded file", file);
 
       await new Promise((res) => {
         createReadStream().pipe(
           createWriteStream(
-            path.join(__dirname, "../../../public/uploads", filename)
+            path.join(
+              __dirname,
+              "../../../public/uploads/users",
+              customFileName
+            )
           ).on("close", res)
         );
       });
