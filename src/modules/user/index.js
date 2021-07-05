@@ -1,5 +1,7 @@
 import { gql } from "apollo-server";
 import User from "../../models/User";
+import { createWriteStream } from "fs";
+import path from "path";
 
 const typeDefs = gql`
   type User {
@@ -42,6 +44,9 @@ const typeDefs = gql`
   input AddFriendInput {
     userId: String
   }
+  input UserImageUploadInput {
+    file: Upload!
+  }
 
   extend type Query {
     users: [User!]! @auth
@@ -53,6 +58,7 @@ const typeDefs = gql`
     createUser(input: CreateUserInput!): User
     deleteUser(input: DeleteUserInput!): User
     addFriend(input: AddFriendInput!): User @auth
+    uploadUserImage(input: UserImageUploadInput!): Boolean
   }
 `;
 
@@ -64,12 +70,12 @@ const resolvers = {
     async user(_, { input }, { user }) {
       const { id } = input;
       const _user = await User.findById(id).catch(() => {
-        throw new Error("Incorrect ObjectId provided")
-      })
+        throw new Error("Incorrect ObjectId provided");
+      });
       if (!_user) {
-        throw new Error("User is not existing")
+        throw new Error("User is not existing");
       }
-      return _user
+      return _user;
     },
   },
   Mutation: {
@@ -115,12 +121,31 @@ const resolvers = {
 
       // check if user exists
       await User.findById(userId).catch(() => {
-        throw new Error("User does not exist")
-      })
+        throw new Error("User does not exist");
+      });
 
       user.friends.push(userId);
       const _user = await user.save();
       return _user;
+    },
+    async uploadUserImage(_, { input }, { user }, __) {
+      const { file } = input;
+      const { createReadStream, filename } = file;
+
+      console.log("uploaded file", file);
+
+      await new Promise((res) => {
+        createReadStream().pipe(
+          createWriteStream(
+            path.join(__dirname, "../../../public/uploads", filename)
+          ).on("close", res)
+        );
+      });
+
+      // save file to user
+      // save filename
+
+      return true;
     },
   },
 };

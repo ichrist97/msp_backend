@@ -23,6 +23,10 @@ const UserSchema = new Schema({
     type: String,
   },
   friends: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
+  image: {
+    type: String,
+    default: "no-photo.jpg",
+  },
   // gets generated via code
   location: [
     {
