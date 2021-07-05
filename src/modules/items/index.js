@@ -1,4 +1,4 @@
-import { gql, PubSub } from "apollo-server";
+import { gql, PubSub } from "apollo-server-express";
 
 const pubSub = new PubSub();
 const NEW_ITEM = "NEW_ITEM";

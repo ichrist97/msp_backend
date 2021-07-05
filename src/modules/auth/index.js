@@ -1,4 +1,4 @@
-import { gql } from "apollo-server";
+import { gql } from "apollo-server-express";
 import User from "../../models/User";
 
 const typeDefs = gql`

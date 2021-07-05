@@ -1,4 +1,4 @@
-import { gql } from "apollo-server";
+import { gql } from "apollo-server-express";
 import User from "../../models/User";
 import { createWriteStream } from "fs";
 import path from "path";

@@ -1,6 +1,8 @@
-import { ApolloServer } from "apollo-server";
+import path from "path";
+import { ApolloServer } from "apollo-server-express";
 import { typeDefs, resolvers } from "./modules";
 // import { customLogPlugin } from "./services/gqlPlugin";
+import express from "express";
 
 import { getUserFromToken } from "./services/auth";
 
@@ -51,8 +53,19 @@ function startServer({ port = process.env.PORT } = {}) {
     // plugins: [customLogPlugin],
   });
 
-  server.listen(port).then(({ url }) => {
-    console.log(`Server ready at: ${url} 🚀 `.green.bold.underline);
+  // server.listen(port).then(({ url }) => {
+  //   console.log(`Server ready at: ${url} 🚀 `.green.bold.underline);
+  // });
+
+  const app = express();
+  app.use(
+    "/uploads",
+    express.static(path.join(__dirname, "../public/uploads"))
+  );
+  server.applyMiddleware({ app });
+
+  app.listen(port, () => {
+    console.log(`🚀  Server ready`);
   });
 }
 export { startServer };

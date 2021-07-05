@@ -1,4 +1,4 @@
-import { SchemaDirectiveVisitor } from "apollo-server";
+import { SchemaDirectiveVisitor } from "apollo-server-express";
 import { defaultFieldResolver, GraphQLString } from "graphql";
 import { formatDate } from "../utils";
 
