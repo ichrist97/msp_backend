@@ -164,6 +164,7 @@ const resolvers = {
 
       // save file to user
       // save filename
+      await User.findByIdAndUpdate(user._id, { image: customFileName });
 
       return true;
     },
