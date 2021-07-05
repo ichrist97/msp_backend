@@ -16,6 +16,13 @@ const typeDefs = gql`
     createdAt: String! @formatDate
     role: Role!
     friends: [User!]
+    image: String
+    imageUrl: String
+  }
+
+  type UserImageUpload {
+    success: Boolean!
+    user: User!
   }
 
   enum Role {
@@ -63,7 +70,7 @@ const typeDefs = gql`
     createUser(input: CreateUserInput!): User
     deleteUser(input: DeleteUserInput!): User
     addFriend(input: AddFriendInput!): User @auth
-    uploadUserImage(input: UserImageUploadInput!): Boolean
+    uploadUserImage(input: UserImageUploadInput!): UserImageUpload @auth
   }
 `;
 
@@ -162,14 +169,24 @@ const resolvers = {
         );
       });
 
-      // save file to user
+      // save image url to user
       const imageUrl = `${process.env.SERVER_URL}:${process.env.PORT}/uploads/users/${customFileName}`;
-      await User.findByIdAndUpdate(user._id, {
-        image: customFileName,
-        imageUrl,
-      });
+      const updatedUser = await User.findByIdAndUpdate(
+        user._id,
+        {
+          image: customFileName,
+          imageUrl,
+        },
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
 
-      return true;
+      return {
+        user: updatedUser,
+        success: true,
+      };
     },
   },
 };
