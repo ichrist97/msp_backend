@@ -46,7 +46,7 @@ const typeDefs = gql`
     createKomyuniti(input: CreateKomyunitiInput): Komyuniti @auth
     updateKomyuniti(input: UpdateKomyunitiInput): Komyuniti @auth
     #deleteKomyuniti(input: DeleteKomyunitiInput): Komyuniti
-    #addKomyunitiMember(input: AddKomyunitiMemberInput): Komyuniti
+    addKomyunitiMember(input: AddKomyunitiMemberInput): Komyuniti
     #deleteKomyunitiMember(input: DeleteKomyunitiMemberInput): Komyuniti
   }
 `;
@@ -102,6 +102,20 @@ const resolvers = {
       );
 
       return updatedKomyuniti;
+    },
+    async addKomyunitiMember(_, { input }, { user }) {
+      const { id, userId } = input;
+
+      const komyuniti = await Komyuniti.findById(id);
+
+      if (!komyuniti) {
+        throw new Error(`Komyuniti not found with id of ${id}`);
+      }
+
+      komyuniti.members.push(userId);
+      const _komyuniti = await komyuniti.save();
+
+      return _komyuniti;
     },
   },
 };
