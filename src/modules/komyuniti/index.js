@@ -19,7 +19,8 @@ const typeDefs = gql`
   }
 
   input UpdateKomyunitiInput {
-    name: String
+    id: String!
+    name: String!
   }
 
   input DeleteKomyunitiInput {
@@ -43,7 +44,7 @@ const typeDefs = gql`
 
   extend type Mutation {
     createKomyuniti(input: CreateKomyunitiInput): Komyuniti @auth
-    #updateKomyuniti(input: UpdateKomyunitiInput): Komyuniti
+    updateKomyuniti(input: UpdateKomyunitiInput): Komyuniti @auth
     #deleteKomyuniti(input: DeleteKomyunitiInput): Komyuniti
     #addKomyunitiMember(input: AddKomyunitiMemberInput): Komyuniti
     #deleteKomyunitiMember(input: DeleteKomyunitiMemberInput): Komyuniti
@@ -72,6 +73,35 @@ const resolvers = {
       const komyuniti = await Komyuniti.create(createObj);
 
       return komyuniti;
+    },
+    async updateKomyuniti(_, { input }, { user }) {
+      const { id, name } = input;
+      const komyunitiUpdateObj = {
+        name,
+      };
+      const komyuniti = await Komyuniti.findById(id);
+
+      if (!komyuniti) {
+        throw new Error(`Komyuniti not found with id of ${id}`);
+      }
+
+      // Make sure user is komyuniti owner
+      if (komyuniti.admin != user._id.toString()) {
+        throw new Error(
+          `User ${user.id} is not authorized to update this komyuniti`
+        );
+      }
+
+      const updatedKomyuniti = await Komyuniti.findByIdAndUpdate(
+        id,
+        komyunitiUpdateObj,
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
+
+      return updatedKomyuniti;
     },
   },
 };
