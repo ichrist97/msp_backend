@@ -45,7 +45,7 @@ const typeDefs = gql`
   extend type Mutation {
     createKomyuniti(input: CreateKomyunitiInput): Komyuniti @auth
     updateKomyuniti(input: UpdateKomyunitiInput): Komyuniti @auth
-    #deleteKomyuniti(input: DeleteKomyunitiInput): Komyuniti
+    deleteKomyuniti(input: DeleteKomyunitiInput): Komyuniti @auth
     addKomyunitiMember(input: AddKomyunitiMemberInput): Komyuniti
     #deleteKomyunitiMember(input: DeleteKomyunitiMemberInput): Komyuniti
   }
@@ -116,6 +116,25 @@ const resolvers = {
       const _komyuniti = await komyuniti.save();
 
       return _komyuniti;
+    },
+    async deleteKomyuniti(_, { input }, { user }) {
+      const { id } = input;
+
+      const komyuniti = await Komyuniti.findById(id);
+
+      if (!komyuniti) {
+        throw Error(`No Komyuniti with the id of ${id}`);
+      }
+
+      // Make sure user is komyuniti owner
+      if (komyuniti.admin != user._id.toString()) {
+        throw new Error(
+          `User ${user.id} is not authorized to delete this komyuniti`
+        );
+      }
+
+      const removedKomyuniti = await komyuniti.remove();
+      return removedKomyuniti;
     },
   },
 };
