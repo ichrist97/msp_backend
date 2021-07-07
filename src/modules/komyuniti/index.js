@@ -6,7 +6,7 @@ const typeDefs = gql`
     _id: ID!
     name: String!
     members: [User!]
-    admins: [User!]
+    admin: User
     createdAt: String! @formatDate
   }
 
@@ -42,7 +42,7 @@ const typeDefs = gql`
   }
 
   extend type Mutation {
-    createKomyuniti(input: CreateKomyunitiInput): Komyuniti
+    createKomyuniti(input: CreateKomyunitiInput): Komyuniti @auth
     #updateKomyuniti(input: UpdateKomyunitiInput): Komyuniti
     #deleteKomyuniti(input: DeleteKomyunitiInput): Komyuniti
     #addKomyunitiMember(input: AddKomyunitiMemberInput): Komyuniti
@@ -67,8 +67,9 @@ const resolvers = {
     },
   },
   Mutation: {
-    async createKomyuniti(_, { input }, __) {
-      const komyuniti = await Komyuniti.create(input);
+    async createKomyuniti(_, { input }, { user }) {
+      const createObj = { ...input, ...{ admin: user._id } };
+      const komyuniti = await Komyuniti.create(createObj);
 
       return komyuniti;
     },

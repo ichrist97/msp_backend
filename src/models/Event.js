@@ -8,13 +8,11 @@ const EventSchema = new mongoose.Schema(
     createdAt: { type: Date, default: Date.now },
     // date: { type: Date, required: [true, "Please add a date"] },
     date: { type: Date },
-    admins: [
-      {
-        type: mongoose.Schema.ObjectId,
-        ref: "User",
-        // required: [true, "Please add an admin to your event!"],
-      },
-    ],
+    admin: {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+      // required: [true, "Please add an admin to your event!"],
+    },
     members: [
       {
         type: mongoose.Schema.ObjectId,

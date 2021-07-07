@@ -6,7 +6,7 @@ const typeDefs = gql`
     _id: ID!
     name: String!
     date: String!
-    admins: [User!]
+    admin: User
     members: [User!]
     createdAt: String! @formatDate
     komyuniti: Komyuniti

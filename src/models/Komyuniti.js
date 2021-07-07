@@ -14,13 +14,11 @@ const KomyunitiSchema = new mongoose.Schema(
         required: [true, "Please add a member!"],
       },
     ],
-    admins: [
-      {
-        type: mongoose.Schema.ObjectId,
-        ref: "User",
-        required: [true, "Please add an admin!"],
-      },
-    ],
+    admin: {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+      required: [true, "Please add an admin!"],
+    },
   },
   { timestamps: true }
 );
