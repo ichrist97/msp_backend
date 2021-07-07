@@ -5,6 +5,7 @@ import userModule from "./user";
 import itemModule from "./items";
 import komyunitiModule from "./komyuniti";
 import eventModule from "./event";
+import chatModule from "./chat";
 
 // custom directives
 import directiveModule from "../directives";
@@ -16,10 +17,11 @@ const typeDefs = [
   categoryModule.typeDefs,
   authModule.typeDefs,
   userModule.typeDefs,
-  itemModule.typeDefs,
+  //itemModule.typeDefs,
   komyunitiModule.typeDefs,
   eventModule.typeDefs,
   directiveModule.typeDefs,
+  chatModule.typeDefs,
 ];
 const resolvers = _.merge(
   {},
@@ -29,7 +31,8 @@ const resolvers = _.merge(
   userModule.resolvers,
   komyunitiModule.resolvers,
   eventModule.resolvers,
-  itemModule.resolvers
+  //itemModule.resolvers,
+  chatModule.resolvers
 );
 
 export { typeDefs, resolvers };
