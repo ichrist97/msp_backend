@@ -1,11 +1,11 @@
 import path from "path";
-import { ApolloServer } from "apollo-server-express";
+import { ApolloServer, AuthenticationError } from "apollo-server-express";
 import { typeDefs, resolvers } from "./modules";
-// import { customLogPlugin } from "./services/gqlPlugin";
 import express from "express";
 import {
   graphqlUploadExpress, // The Express middleware.
 } from "graphql-upload";
+import http from "http";
 
 import { getUserFromToken } from "./services/auth";
 
@@ -19,7 +19,7 @@ import {
 } from "./directives/visitors";
 
 function startServer({ port = process.env.PORT } = {}) {
-  const server = new ApolloServer({
+  const apolloServer = new ApolloServer({
     schemaDirectives: {
       log: LogDirective,
       formatDate: FormatDateDirective,
@@ -40,41 +40,40 @@ function startServer({ port = process.env.PORT } = {}) {
       // req.headers get lowercased by express
       const token = req.headers.authorization;
       const user = await getUserFromToken(token);
-      // console.log("user ctx", user);
+
       return { user };
     },
     subscriptions: {
       async onConnect(params) {
         // params represent req.headers but do not get lowercased
-        const token = params.authToken;
+        const token = params.Authorization;
         const user = await getUserFromToken(token);
 
         // globaly shut down subscriptions -> only authed users can initiate subscriptions
         if (!user) {
-          throw new Error("not authorized");
+          throw new AuthenticationError("Not authorized!");
         }
         // subscription return gets merged with the context object
         return { user };
       },
     },
-    // plugins: [customLogPlugin],
   });
 
-  // server.listen(port).then(({ url }) => {
-  //   console.log(`Server ready at: ${url} 🚀 `.green.bold.underline);
-  // });
-
+  // init express app
   const app = express();
+
+  // express middlewares
   app.use(graphqlUploadExpress());
+  app.use("/uploads", express.static(path.join(__dirname, "../public/uploads")));
+  apolloServer.applyMiddleware({ app });
 
-  app.use(
-    "/uploads",
-    express.static(path.join(__dirname, "../public/uploads"))
-  );
-  server.applyMiddleware({ app });
+  // activate subscriptions in apollo
+  const server = http.createServer(app);
+  apolloServer.installSubscriptionHandlers(server);
 
-  app.listen(port, () => {
-    console.log(`🚀  Server ready`);
+  // start server
+  server.listen(port, () => {
+    console.log(`🚀  Server ready at http://localhost:${port}/graphql`);
   });
 }
 export { startServer };
