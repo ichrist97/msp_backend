@@ -1,6 +1,7 @@
 import { gql, PubSub, withFilter } from "apollo-server-express";
 import ChatMessage from "../../models/Chat";
 import Event from "../../models/Event";
+import mongoose from "mongoose";
 
 const pubSub = new PubSub();
 const TOPIC = "MSG_CREATED";
@@ -25,9 +26,31 @@ const typeDefs = gql`
     eventId: String!
     text: String!
   }
+
+  extend type Query {
+    chatMsg(id: String!): ChatMsg @auth
+    chatMsgs(eventId: String): [ChatMsg] @auth
+  }
 `;
 
 const resolvers = {
+  Query: {
+    async chatMsg(_, { id }) {
+      const msg = await ChatMessage.findById(id);
+      if (!msg) {
+        throw new Error("Message is not existing");
+      }
+      return msg;
+    },
+    async chatMsgs(_, { eventId }) {
+      // TODO check if user is member of event and allowed to see messages
+      if (eventId !== undefined) {
+        const id = mongoose.Types.ObjectId(eventId);
+        return await ChatMessage.find({ event: { $eq: id } });
+      }
+      return await ChatMessage.find({});
+    },
+  },
   Mutation: {
     async createChatMsg(_, { input }, { user }) {
       // save in database
