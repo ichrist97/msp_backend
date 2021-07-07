@@ -45,8 +45,8 @@ const typeDefs = gql`
   extend type Mutation {
     createKomyuniti(input: CreateKomyunitiInput): Komyuniti @auth
     updateKomyuniti(input: UpdateKomyunitiInput): Komyuniti @auth
-    #deleteKomyuniti(input: DeleteKomyunitiInput): Komyuniti
-    #addKomyunitiMember(input: AddKomyunitiMemberInput): Komyuniti
+    deleteKomyuniti(input: DeleteKomyunitiInput): Komyuniti @auth
+    addKomyunitiMember(input: AddKomyunitiMemberInput): Komyuniti
     #deleteKomyunitiMember(input: DeleteKomyunitiMemberInput): Komyuniti
   }
 `;
@@ -102,6 +102,39 @@ const resolvers = {
       );
 
       return updatedKomyuniti;
+    },
+    async addKomyunitiMember(_, { input }, { user }) {
+      const { id, userId } = input;
+
+      const komyuniti = await Komyuniti.findById(id);
+
+      if (!komyuniti) {
+        throw new Error(`Komyuniti not found with id of ${id}`);
+      }
+
+      komyuniti.members.push(userId);
+      const _komyuniti = await komyuniti.save();
+
+      return _komyuniti;
+    },
+    async deleteKomyuniti(_, { input }, { user }) {
+      const { id } = input;
+
+      const komyuniti = await Komyuniti.findById(id);
+
+      if (!komyuniti) {
+        throw Error(`No Komyuniti with the id of ${id}`);
+      }
+
+      // Make sure user is komyuniti owner
+      if (komyuniti.admin != user._id.toString()) {
+        throw new Error(
+          `User ${user.id} is not authorized to delete this komyuniti`
+        );
+      }
+
+      const removedKomyuniti = await komyuniti.remove();
+      return removedKomyuniti;
     },
   },
 };

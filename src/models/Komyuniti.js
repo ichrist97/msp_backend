@@ -25,8 +25,7 @@ const KomyunitiSchema = new mongoose.Schema(
 
 // Cascade delete Events when a Komyuniti is deleted
 KomyunitiSchema.pre("remove", async function (next) {
-  console.log(`Events being removed from Komyuniti ${this._id}`);
-  await this.model("Event").deleteMany({ komyuniti: this._id });
+  // TODO: cascading delete of events
   next();
 });
 

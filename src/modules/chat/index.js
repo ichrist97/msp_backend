@@ -1,5 +1,6 @@
-import { gql, PubSub } from "apollo-server-express";
+import { gql, PubSub, withFilter } from "apollo-server-express";
 import ChatMessage from "../../models/Chat";
+import Event from "../../models/Event";
 
 const pubSub = new PubSub();
 const TOPIC = "MSG_CREATED";
@@ -17,7 +18,7 @@ const typeDefs = gql`
   }
 
   extend type Mutation {
-    createChatMsg(input: CreateMsgInput!): ChatMsg
+    createChatMsg(input: CreateMsgInput!): ChatMsg @auth
   }
 
   input CreateMsgInput {
@@ -40,28 +41,32 @@ const resolvers = {
       const msg = await ChatMessage.create(msgCreateObj);
 
       // publish to subscription
-      pubSub.publish(TOPIC, { msg: msg });
+      pubSub.publish(TOPIC, { msgCreated: msg });
 
       return msg;
     },
   },
   Subscription: {
     msgCreated: {
-      subscribe: () => {
-        return withFilter(
-          () => pubsub.asyncIterator(TOPIC),
-          (payload, args) => {
-            // TODO check if user is member of event
-
-            // filter by eventId
-            const correctEvent = payload.messageCreated.eventId === args.eventId;
-            // dont get subscription event for own messages
-            const notOwnMsg = payload.messageCreated.userId !== context.user?.id;
-
-            return correctEvent && notOwnMsg;
+      subscribe: withFilter(
+        () => pubSub.asyncIterator(TOPIC),
+        (payload, variables, context) => {
+          // check if user is member of event
+          /*
+          const event = await Event.findById(payload.msg.event._id.toString());
+          if (!event.members.includes(context.user._id)) {
+            return false;
           }
-        );
-      },
+          */
+
+          // filter by eventId
+          const correctEvent = payload.msgCreated.event._id.toString() === variables.eventId;
+          // dont get subscription event for own messages
+          const notOwnMsg = payload.msgCreated.user._id !== context.user._id;
+
+          return correctEvent && notOwnMsg;
+        }
+      ),
     },
   },
 };

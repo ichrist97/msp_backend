@@ -10,7 +10,7 @@ const typeDefs = gql`
     members: [User!]
     createdAt: String! @formatDate
     komyuniti: Komyuniti
-    adress: String
+    address: String
   }
 
   input GetEventInput {
@@ -24,8 +24,10 @@ const typeDefs = gql`
   }
 
   input UpdateEventInput {
-    name: String
+    id: String!
+    name: String!
     date: String
+    address: String
   }
 
   input DeleteEventInput {
@@ -49,9 +51,9 @@ const typeDefs = gql`
 
   extend type Mutation {
     createEvent(input: CreateEventInput): Event
-    #updateEvent(input: UpdateEventInput): Event
+    updateEvent(input: UpdateEventInput): Event
     #deleteEvent(input: DeleteEventInput): Event
-    #addEventMember(input: AddEventMemberInput): Event
+    addEventMember(input: AddEventMemberInput): Event
     #deleteEventMember(input: DeleteEventMemberInput): Event
   }
 `;
@@ -83,6 +85,38 @@ const resolvers = {
       const event = await Event.create(eventCreateObj);
 
       return event;
+    },
+    async updateEvent(_, { input }, { user }) {
+      const { id } = input;
+      const event = await Event.findById(id);
+
+      if (!event) {
+        throw new Error(`Event not found with id of ${id}`);
+      }
+
+      // TODO: check if user is member
+
+      event.name = input.name || event.name;
+      event.date = input.date || event.date;
+      event.address = input.address || event.address;
+
+      const updatedEvent = await event.save();
+
+      return updatedEvent;
+    },
+    async addEventMember(_, { input }, __) {
+      const { id, userId } = input;
+
+      const event = await Event.findById(id);
+
+      if (!event) {
+        throw new Error(`Event not found with id of ${id}`);
+      }
+
+      event.members.push(userId);
+      const _event = await event.save();
+
+      return _event;
     },
   },
 };
