@@ -85,7 +85,7 @@ const resolvers = {
           // filter by eventId
           const correctEvent = payload.msgCreated.event._id.toString() === variables.eventId;
           // dont get subscription event for own messages
-          const notOwnMsg = payload.msgCreated.user._id !== context.user._id;
+          const notOwnMsg = payload.msgCreated.user._id.toString() !== context.user._id.toString();
 
           return correctEvent && notOwnMsg;
         }
