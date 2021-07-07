@@ -6,25 +6,32 @@ const EventSchema = new mongoose.Schema(
     name: { type: String, required: true },
     description: { type: String },
     createdAt: { type: Date, default: Date.now },
-    date: { type: Date, required: [true, "Please add a date"] },
+    // date: { type: Date, required: [true, "Please add a date"] },
+    date: { type: Date },
     admins: [
       {
-        type: [mongoose.Schema.ObjectId],
+        type: mongoose.Schema.ObjectId,
         ref: "User",
-        required: [true, "Please add an admin to your event!"],
+        // required: [true, "Please add an admin to your event!"],
       },
     ],
-    invitedUsers: [
+    members: [
       {
-        type: [mongoose.Schema.ObjectId],
+        type: mongoose.Schema.ObjectId,
         ref: "User",
-        required: [true, "Please invite users to your event!"],
       },
     ],
-    acceptedUsers: [{ type: [mongoose.Schema.ObjectId], ref: "User" }],
+    // invitedUsers: [
+    //   {
+    //     type: [mongoose.Schema.ObjectId],
+    //     ref: "User",
+    //     // required: [true, "Please invite users to your event!"],
+    //   },
+    // ],
+    // acceptedUsers: [{ type: [mongoose.Schema.ObjectId], ref: "User" }],
     address: {
       type: String,
-      required: [true, "Please add an address"],
+      // required: [true, "Please add an address"],
     },
     location: [
       {
@@ -45,19 +52,20 @@ const EventSchema = new mongoose.Schema(
         country: String,
       },
     ],
-    komyuniti: [
-      {
-        type: [mongoose.Schema.ObjectId],
-        ref: "User",
-        required: [true, "Please add a Komyuniti"],
-      },
-    ],
+    komyuniti: {
+      type: mongoose.Schema.ObjectId,
+      ref: "Komyuniti",
+      // required: [true, "Please add a Komyuniti"],
+    },
   },
   { timestamps: true }
 );
 
 // Geocode & create location field
 EventSchema.pre("save", async function (next) {
+  if (!this.isModified("address")) {
+    next();
+  }
   const loc = await geocoder.geocode(this.address);
   this.location = {
     type: "Point",
@@ -74,5 +82,20 @@ EventSchema.pre("save", async function (next) {
   this.address = undefined;
   next();
 });
+
+// always populate friends of a user
+var autoPopulateKomyuniti = function (next) {
+  this.populate("komyuniti");
+  next();
+};
+
+EventSchema.pre("findOne", autoPopulateKomyuniti)
+  .pre("find", autoPopulateKomyuniti)
+  .pre("findById", autoPopulateKomyuniti)
+  .post("save", function (doc, next) {
+    doc.populate("komyuniti").execPopulate(function () {
+      next();
+    });
+  });
 
 export default mongoose.model("Event", EventSchema);

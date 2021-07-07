@@ -16,7 +16,7 @@ const KomyunitiSchema = new mongoose.Schema(
     ],
     admins: [
       {
-        type: [mongoose.Schema.ObjectId],
+        type: mongoose.Schema.ObjectId,
         ref: "User",
         required: [true, "Please add an admin!"],
       },

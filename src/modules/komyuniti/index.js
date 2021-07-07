@@ -19,7 +19,7 @@ const typeDefs = gql`
   }
 
   input UpdateKomyunitiInput {
-    name: String!
+    name: String
   }
 
   input DeleteKomyunitiInput {
