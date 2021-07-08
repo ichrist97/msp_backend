@@ -18,6 +18,7 @@ const typeDefs = gql`
   input LoginInput {
     email: String!
     password: String!
+    publicKey: String
   }
 
   input UpdateUserDetailsInput {
@@ -71,9 +72,9 @@ const resolvers = {
     },
 
     async login(_, { input }) {
-      const { email, password } = input;
+      const { email, password, publicKey } = input;
 
-      const user = await User.findOne({ email }).select("+password");
+      let user = await User.findOne({ email }).select("+password");
 
       if (!user) {
         throw new Error("wrong email and password");
@@ -83,6 +84,15 @@ const resolvers = {
 
       if (!passwordMatch) {
         throw new Error("wrong email and password");
+      }
+
+      // check if login from new device
+      if (publicKey !== undefined) {
+        // add new public key to model
+        if (!user.publicKeys.contains(publicKey)) {
+          user.publicKeys.push(publicKey);
+          user = await User.findOneAndUpdate({ _id: user.id }, user);
+        }
       }
 
       const token = user.getSignedToken();

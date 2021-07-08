@@ -66,6 +66,10 @@ const UserSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  publicKeys: {
+    type: [String],
+    default: [],
+  },
 });
 
 //encrypt password with bcrypt
