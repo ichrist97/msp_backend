@@ -82,7 +82,7 @@ EventSchema.pre("save", async function (next) {
 });
 
 // always populate friends of a user
-var autoPopulateKomyuniti = function (next) {
+const autoPopulateKomyuniti = function (next) {
   this.populate("komyuniti");
   next();
 };
@@ -92,6 +92,21 @@ EventSchema.pre("findOne", autoPopulateKomyuniti)
   .pre("findById", autoPopulateKomyuniti)
   .post("save", function (doc, next) {
     doc.populate("komyuniti").execPopulate(function () {
+      next();
+    });
+  });
+
+// always populate friends of a user
+const autoPopulateMembers = function (next) {
+  this.populate("members");
+  next();
+};
+
+EventSchema.pre("findOne", autoPopulateMembers)
+  .pre("find", autoPopulateMembers)
+  .pre("findById", autoPopulateMembers)
+  .post("save", function (doc, next) {
+    doc.populate("members").execPopulate(function () {
       next();
     });
   });
