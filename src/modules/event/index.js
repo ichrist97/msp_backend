@@ -1,5 +1,6 @@
 import { gql } from "apollo-server-express";
 import Event from "../../models/Event";
+import mongoose from "mongoose";
 
 const typeDefs = gql`
   type Event {
@@ -46,7 +47,7 @@ const typeDefs = gql`
 
   extend type Query {
     event(input: GetEventInput!): Event
-    events: [Event]
+    events(userId: String): [Event]
   }
 
   extend type Mutation {
@@ -60,7 +61,12 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    async events(_, __, { user }) {
+    async events(_, { userId }) {
+      // find by optional given userId
+      if (userId !== undefined) {
+        const id = mongoose.Types.ObjectId(userId);
+        return await Event.find({ members: { $elemMatch: { $eq: id } } });
+      }
       return await Event.find({});
     },
     async event(_, { input }, { user }) {

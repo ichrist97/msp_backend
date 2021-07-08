@@ -1,5 +1,6 @@
 import { gql } from "apollo-server-express";
 import Komyuniti from "../../models/Komyuniti";
+import mongoose from "mongoose";
 
 const typeDefs = gql`
   type Komyuniti {
@@ -39,7 +40,7 @@ const typeDefs = gql`
 
   extend type Query {
     komyuniti(input: GetKomyunitiInput!): Komyuniti
-    komyunities: [Komyuniti]
+    komyunities(userId: String): [Komyuniti]
   }
 
   extend type Mutation {
@@ -53,7 +54,13 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    async komyunities(_, __, { user }) {
+    async komyunities(_, { userId }) {
+      // find by optional given userId
+      if (userId !== undefined) {
+        const id = mongoose.Types.ObjectId(userId);
+        return await Komyuniti.find({ members: { $elemMatch: { $eq: id } } });
+      }
+
       return await Komyuniti.find({});
     },
     async komyuniti(_, { input }, { user }) {
@@ -87,19 +94,13 @@ const resolvers = {
 
       // Make sure user is komyuniti owner
       if (komyuniti.admin != user._id.toString()) {
-        throw new Error(
-          `User ${user.id} is not authorized to update this komyuniti`
-        );
+        throw new Error(`User ${user.id} is not authorized to update this komyuniti`);
       }
 
-      const updatedKomyuniti = await Komyuniti.findByIdAndUpdate(
-        id,
-        komyunitiUpdateObj,
-        {
-          new: true,
-          runValidators: true,
-        }
-      );
+      const updatedKomyuniti = await Komyuniti.findByIdAndUpdate(id, komyunitiUpdateObj, {
+        new: true,
+        runValidators: true,
+      });
 
       return updatedKomyuniti;
     },
@@ -128,9 +129,7 @@ const resolvers = {
 
       // Make sure user is komyuniti owner
       if (komyuniti.admin != user._id.toString()) {
-        throw new Error(
-          `User ${user.id} is not authorized to delete this komyuniti`
-        );
+        throw new Error(`User ${user.id} is not authorized to delete this komyuniti`);
       }
 
       const removedKomyuniti = await komyuniti.remove();
