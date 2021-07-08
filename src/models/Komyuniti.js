@@ -29,4 +29,34 @@ KomyunitiSchema.pre("remove", async function (next) {
   next();
 });
 
+// always populate friends of a user
+const autoPopulateMembers = function (next) {
+  this.populate("members");
+  next();
+};
+
+KomyunitiSchema.pre("findOne", autoPopulateMembers)
+  .pre("find", autoPopulateMembers)
+  .pre("findById", autoPopulateMembers)
+  .post("save", function (doc, next) {
+    doc.populate("members").execPopulate(function () {
+      next();
+    });
+  });
+
+// always populate friends of a user
+const autoPopulateAdmin = function (next) {
+  this.populate("admin");
+  next();
+};
+
+KomyunitiSchema.pre("findOne", autoPopulateAdmin)
+  .pre("find", autoPopulateAdmin)
+  .pre("findById", autoPopulateAdmin)
+  .post("save", function (doc, next) {
+    doc.populate("admin").execPopulate(function () {
+      next();
+    });
+  });
+
 export default mongoose.model("Komyuniti", KomyunitiSchema);
