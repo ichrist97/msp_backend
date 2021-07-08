@@ -18,6 +18,7 @@ const typeDefs = gql`
     friends: [User!]
     image: String
     imageUrl: String
+    publicKeys: [String!]
   }
 
   type UserImageUpload {
@@ -71,6 +72,7 @@ const typeDefs = gql`
     deleteUser(input: DeleteUserInput!): User
     addFriend(input: AddFriendInput!): User @auth
     uploadUserImage(input: UserImageUploadInput!): UserImageUpload @auth
+    addPublicKey(key: String!): User @auth
   }
 `;
 
@@ -160,11 +162,7 @@ const resolvers = {
       await new Promise((res) => {
         createReadStream().pipe(
           createWriteStream(
-            path.join(
-              __dirname,
-              "../../../public/uploads/users",
-              customFileName
-            )
+            path.join(__dirname, "../../../public/uploads/users", customFileName)
           ).on("close", res)
         );
       });
@@ -187,6 +185,16 @@ const resolvers = {
         user: updatedUser,
         success: true,
       };
+    },
+    async addPublicKey(_, { key }, { user }) {
+      let _user = await User.findById(user._id);
+
+      // add new public key to model
+      if (!_user.publicKeys.includes(key)) {
+        _user.publicKeys.push(key);
+        _user = await _user.save();
+      }
+      return _user;
     },
   },
 };
