@@ -5,8 +5,7 @@ const EventSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     description: { type: String },
-    createdAt: { type: Date, default: Date.now },
-    // date: { type: Date, required: [true, "Please add a date"] },
+    createdAt: { type: Date, default: new Date() },
     date: { type: Date },
     admin: {
       type: mongoose.Schema.ObjectId,

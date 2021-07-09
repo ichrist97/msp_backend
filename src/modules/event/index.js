@@ -6,7 +6,7 @@ const typeDefs = gql`
   type Event {
     _id: ID!
     name: String!
-    date: String!
+    date: String! @formatDate
     admin: User
     members: [User!]
     createdAt: String! @formatDate
@@ -20,14 +20,14 @@ const typeDefs = gql`
 
   input CreateEventInput {
     name: String!
-    date: String!
-    komyunitiId: String!
+    date: String! @formatDate
+    komyunitiId: String
   }
 
   input UpdateEventInput {
     id: String!
     name: String!
-    date: String
+    date: String @formatDate
     address: String
   }
 
@@ -51,7 +51,7 @@ const typeDefs = gql`
   }
 
   extend type Mutation {
-    createEvent(input: CreateEventInput): Event
+    createEvent(input: CreateEventInput!): Event
     updateEvent(input: UpdateEventInput): Event
     #deleteEvent(input: DeleteEventInput): Event
     addEventMember(input: AddEventMemberInput): Event
@@ -84,9 +84,9 @@ const resolvers = {
     async createEvent(_, { input }, __) {
       const { komyunitiId, date, name } = input;
       const eventCreateObj = {
-        komyuniti: komyunitiId,
-        date,
-        name,
+        komyuniti: komyunitiId !== undefined ? komyunitiId : null,
+        date: new Date(date),
+        name: name,
       };
       const event = await Event.create(eventCreateObj);
 

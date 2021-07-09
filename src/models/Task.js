@@ -12,7 +12,7 @@ const TaskSchema = new mongoose.Schema(
       ref: "Event",
       required: [true, "Please add an event to your task!"],
     },
-    createdAt: { type: Date, default: Date.now },
+    createdAt: { type: Date, default: new Date() },
     title: { type: String, required: [true, "Please add a title"] },
     description: { type: String },
     priority: { type: String, enum: ["LOW", "MEDIUM", "HIGH"] },

@@ -6,7 +6,7 @@ const KomyunitiSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please add a name for your Komyuniti!"],
     },
-    createdAt: { type: Date, default: Date.now },
+    createdAt: { type: Date, default: new Date() },
     members: [
       {
         type: mongoose.Schema.ObjectId,
