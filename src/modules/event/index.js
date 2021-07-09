@@ -87,6 +87,7 @@ const resolvers = {
         komyuniti: komyunitiId !== undefined ? komyunitiId : null,
         date: new Date(date),
         name: name,
+        createdAt: new Date(),
       };
       const event = await Event.create(eventCreateObj);
 
