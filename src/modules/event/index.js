@@ -20,14 +20,14 @@ const typeDefs = gql`
 
   input CreateEventInput {
     name: String!
-    date: String! @formatDate
+    date: String!
     komyunitiId: String
   }
 
   input UpdateEventInput {
     id: String!
     name: String!
-    date: String @formatDate
+    date: String
     address: String
   }
 
