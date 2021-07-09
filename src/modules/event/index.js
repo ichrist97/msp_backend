@@ -47,7 +47,7 @@ const typeDefs = gql`
 
   extend type Query {
     event(input: GetEventInput!): Event
-    events(userId: String): [Event]
+    events(userId: String, komyunitiId: String): [Event]
   }
 
   extend type Mutation {
@@ -61,12 +61,29 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    async events(_, { userId }) {
+    async events(_, { userId, komyunitiId }) {
       // find by optional given userId
-      if (userId !== undefined) {
+      if (userId !== undefined && komyunitiId === undefined) {
         const id = mongoose.Types.ObjectId(userId);
         return await Event.find({ members: { $elemMatch: { $eq: id } } });
       }
+
+      // find by optional given komyunitiId
+      else if (userId === undefined && komyunitiId !== undefined) {
+        const id = mongoose.Types.ObjectId(komyunitiId);
+        return await Event.find({ komyuniti: { $eq: id } });
+      }
+
+      // find by both
+      else if (userId !== undefined && komyunitiId !== undefined) {
+        const userId = mongoose.Types.ObjectId(userId);
+        const komyunitiId = mongoose.Types.ObjectId(komyunitiId);
+        return await Event.find({
+          komyuniti: { $eq: komyunitiId },
+          members: { $elemMatch: { $eq: userId } },
+        });
+      }
+
       return await Event.find({});
     },
     async event(_, { input }, { user }) {
