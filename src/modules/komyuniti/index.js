@@ -17,6 +17,7 @@ const typeDefs = gql`
 
   input CreateKomyunitiInput {
     name: String!
+    userIds: [String!]
   }
 
   input UpdateKomyunitiInput {
@@ -76,7 +77,15 @@ const resolvers = {
   },
   Mutation: {
     async createKomyuniti(_, { input }, { user }) {
-      const createObj = { ...input, ...{ admin: user._id } };
+      const { name, userIds } = input;
+      // add optional members beside admin
+      let members = [user._id];
+      if (userIds !== undefined) {
+        const userObjIds = userIds.map((id) => mongoose.Types.ObjectId(id));
+        members = [...members, ...userObjIds];
+      }
+
+      const createObj = { name: name, members: members, admin: user._id };
       const komyuniti = await Komyuniti.create(createObj);
 
       return komyuniti;
