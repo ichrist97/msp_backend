@@ -2,6 +2,7 @@ import path from "path";
 import { ApolloServer, AuthenticationError } from "apollo-server-express";
 import { typeDefs, resolvers } from "./modules";
 import express from "express";
+import logger from "morgan";
 import {
   graphqlUploadExpress, // The Express middleware.
 } from "graphql-upload";
@@ -63,6 +64,7 @@ function startServer({ port = process.env.PORT } = {}) {
   const app = express();
 
   // express middlewares
+  app.use(logger("dev"));
   app.use(graphqlUploadExpress());
   app.use("/uploads", express.static(path.join(__dirname, "../public/uploads")));
   apolloServer.applyMiddleware({ app });

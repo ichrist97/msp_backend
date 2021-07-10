@@ -1,5 +1,5 @@
 {
-  "name": "node_gql_server",
+  "name": "msp_backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,7 +8,8 @@
   },
   "scripts": {
     "start": "node .",
-    "build": "babel --delete-dir-on-start --out-dir dist --copy-files --ignore \"**/__tests__/**,**/__mocks__/**\" --no-copy-ignored src"
+    "build": "babel --delete-dir-on-start --out-dir dist --copy-files --ignore \"**/__tests__/**,**/__mocks__/**\" --no-copy-ignored src",
+    "format": "prettier --config .prettierrc '*.js' --write"
   },
   "keywords": [],
   "author": "",
@@ -26,6 +27,7 @@
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
     "mongoose": "^5.12.13",
+    "morgan": "^1.10.0",
     "node-geocoder": "^3.27.0"
   },
   "devDependencies": {
@@ -33,6 +35,7 @@
     "@babel/core": "^7.14.3",
     "@babel/preset-env": "^7.14.4",
     "@babel/register": "^7.13.16",
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.7",
+    "prettier": "^2.3.2"
   }
 }
