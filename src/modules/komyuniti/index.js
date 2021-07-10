@@ -30,7 +30,7 @@ const typeDefs = gql`
 
   input AddKomyunitiMemberInput {
     id: String!
-    userId: String!
+    userIds: [String!]!
   }
 
   input DeleteKomyunitiMemberInput {
@@ -44,10 +44,10 @@ const typeDefs = gql`
   }
 
   extend type Mutation {
-    createKomyuniti(input: CreateKomyunitiInput): Komyuniti @auth
-    updateKomyuniti(input: UpdateKomyunitiInput): Komyuniti @auth
-    deleteKomyuniti(input: DeleteKomyunitiInput): Komyuniti @auth
-    addKomyunitiMember(input: AddKomyunitiMemberInput): Komyuniti
+    createKomyuniti(input: CreateKomyunitiInput!): Komyuniti @auth
+    updateKomyuniti(input: UpdateKomyunitiInput!): Komyuniti @auth
+    deleteKomyuniti(input: DeleteKomyunitiInput!): Komyuniti @auth
+    addKomyunitiMember(input: AddKomyunitiMemberInput!): Komyuniti
     #deleteKomyunitiMember(input: DeleteKomyunitiMemberInput): Komyuniti
   }
 `;
@@ -105,7 +105,7 @@ const resolvers = {
       return updatedKomyuniti;
     },
     async addKomyunitiMember(_, { input }, { user }) {
-      const { id, userId } = input;
+      const { id, userIds } = input;
 
       const komyuniti = await Komyuniti.findById(id);
 
@@ -113,7 +113,13 @@ const resolvers = {
         throw new Error(`Komyuniti not found with id of ${id}`);
       }
 
-      komyuniti.members.push(userId);
+      const members = komyuniti.members.map((m) => m._id.toString());
+      for (let userId of userIds) {
+        if (!members.includes(userId)) {
+          komyuniti.members.push(mongoose.Types.ObjectId(userId));
+        }
+      }
+
       const _komyuniti = await komyuniti.save();
 
       return _komyuniti;
