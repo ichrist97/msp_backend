@@ -46,16 +46,16 @@ const typeDefs = gql`
   }
 
   extend type Query {
-    event(input: GetEventInput!): Event
-    events(userId: String, komyunitiId: String): [Event]
+    event(input: GetEventInput!): Event @auth
+    events(userId: String, komyunitiId: String): [Event] @auth
   }
 
   extend type Mutation {
-    createEvent(input: CreateEventInput!): Event
-    updateEvent(input: UpdateEventInput): Event
-    #deleteEvent(input: DeleteEventInput): Event
-    addEventMember(input: AddEventMemberInput): Event
-    #deleteEventMember(input: DeleteEventMemberInput): Event
+    createEvent(input: CreateEventInput!): Event @auth
+    updateEvent(input: UpdateEventInput): Event @auth
+    #deleteEvent(input: DeleteEventInput): Event @auth
+    addEventMember(input: AddEventMemberInput): Event @auth
+    #deleteEventMember(input: DeleteEventMemberInput): Event @auth
   }
 `;
 
@@ -98,13 +98,15 @@ const resolvers = {
     },
   },
   Mutation: {
-    async createEvent(_, { input }, __) {
+    async createEvent(_, { input }, { user }) {
       const { komyunitiId, date, name } = input;
       const eventCreateObj = {
         komyuniti: komyunitiId !== undefined ? komyunitiId : null,
         date: new Date(date),
         name: name,
         createdAt: new Date(),
+        admin: user._id,
+        members: [user._id],
       };
       const event = await Event.create(eventCreateObj);
 

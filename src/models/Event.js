@@ -5,12 +5,12 @@ const EventSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     description: { type: String },
-    createdAt: { type: Date, default: new Date() },
-    date: { type: Date },
+    createdAt: { type: Date, default: new Date(), required: true },
+    date: { type: Date, required: true },
     admin: {
       type: mongoose.Schema.ObjectId,
       ref: "User",
-      // required: [true, "Please add an admin to your event!"],
+      required: true,
     },
     members: [
       {
@@ -52,7 +52,6 @@ const EventSchema = new mongoose.Schema(
     komyuniti: {
       type: mongoose.Schema.ObjectId,
       ref: "Komyuniti",
-      // required: [true, "Please add a Komyuniti"],
     },
   },
   { timestamps: true }

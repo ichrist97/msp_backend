@@ -40,16 +40,16 @@ const typeDefs = gql`
   }
 
   extend type Query {
-    komyuniti(input: GetKomyunitiInput!): Komyuniti
-    komyunities(userId: String): [Komyuniti]
+    komyuniti(input: GetKomyunitiInput!): Komyuniti @auth
+    komyunities(userId: String): [Komyuniti] @auth
   }
 
   extend type Mutation {
     createKomyuniti(input: CreateKomyunitiInput!): Komyuniti @auth
     updateKomyuniti(input: UpdateKomyunitiInput!): Komyuniti @auth
     deleteKomyuniti(input: DeleteKomyunitiInput!): Komyuniti @auth
-    addKomyunitiMember(input: AddKomyunitiMemberInput!): Komyuniti
-    #deleteKomyunitiMember(input: DeleteKomyunitiMemberInput): Komyuniti
+    addKomyunitiMember(input: AddKomyunitiMemberInput!): Komyuniti @auth
+    #deleteKomyunitiMember(input: DeleteKomyunitiMemberInput): Komyuniti @auth
   }
 `;
 
