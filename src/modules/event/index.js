@@ -23,6 +23,7 @@ const typeDefs = gql`
     date: String!
     komyunitiId: String
     address: String
+    userIds: [String!]
   }
 
   input UpdateEventInput {
@@ -54,7 +55,7 @@ const typeDefs = gql`
   extend type Mutation {
     createEvent(input: CreateEventInput!): Event @auth
     updateEvent(input: UpdateEventInput): Event @auth
-    #deleteEvent(input: DeleteEventInput): Event @auth
+    deleteEvent(input: DeleteEventInput!): String @auth
     addEventMember(input: AddEventMemberInput): Event @auth
     #deleteEventMember(input: DeleteEventMemberInput): Event @auth
   }
@@ -100,14 +101,23 @@ const resolvers = {
   },
   Mutation: {
     async createEvent(_, { input }, { user }) {
-      const { komyunitiId, date, name, address } = input;
+      const { komyunitiId, date, name, address, userIds } = input;
+
+      // prepare optional members
+      let members = [user._id];
+      if (userIds !== undefined) {
+        for (const userId of userIds) {
+          members.push(mongoose.Types.ObjectId(userId));
+        }
+      }
+
       const eventCreateObj = {
         komyuniti: komyunitiId !== undefined ? mongoose.Types.ObjectId(komyunitiId) : null,
         date: new Date(date),
         name: name,
         createdAt: new Date(),
         admin: user._id,
-        members: [user._id],
+        members: members,
         address: address !== undefined ? address : null,
       };
       const event = await Event.create(eventCreateObj);
@@ -131,6 +141,23 @@ const resolvers = {
       const updatedEvent = await event.save();
 
       return updatedEvent;
+    },
+    async deleteEvent(_, { input }, { user }) {
+      const { id } = input;
+      const event = await Event.findById(id);
+
+      if (!event) {
+        throw Error(`No event with the id of ${id}`);
+      }
+
+      // Make sure user is event admin
+      if (event.admin._id.toString() != user._id.toString()) {
+        throw new Error(`User ${user.id} is not authorized to delete this event`);
+      }
+
+      return Event.deleteOne({ _id: id }).then(() => {
+        return `Deleted event with id: ${id}`;
+      });
     },
     async addEventMember(_, { input }, __) {
       const { id, userId } = input;
