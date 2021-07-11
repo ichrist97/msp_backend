@@ -143,7 +143,7 @@ const resolvers = {
       }
 
       // Make sure user is komyuniti owner
-      if (komyuniti.admin != user._id.toString()) {
+      if (komyuniti.admin._id.toString() != user._id.toString()) {
         throw new Error(`User ${user.id} is not authorized to delete this komyuniti`);
       }
 
