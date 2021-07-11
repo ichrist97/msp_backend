@@ -22,6 +22,7 @@ const typeDefs = gql`
     name: String!
     date: String!
     komyunitiId: String
+    address: String
   }
 
   input UpdateEventInput {
@@ -99,7 +100,7 @@ const resolvers = {
   },
   Mutation: {
     async createEvent(_, { input }, { user }) {
-      const { komyunitiId, date, name } = input;
+      const { komyunitiId, date, name, address } = input;
       const eventCreateObj = {
         komyuniti: komyunitiId !== undefined ? mongoose.Types.ObjectId(komyunitiId) : null,
         date: new Date(date),
@@ -107,6 +108,7 @@ const resolvers = {
         createdAt: new Date(),
         admin: user._id,
         members: [user._id],
+        address: address !== undefined ? address : null,
       };
       const event = await Event.create(eventCreateObj);
 
