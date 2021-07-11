@@ -5,6 +5,7 @@ import User from "../../models/User";
 import {
   GraphQLUpload, // The GraphQL "Upload" Scalar
 } from "graphql-upload";
+import mongoose from "mongoose";
 
 const typeDefs = gql`
   scalar Upload
@@ -143,10 +144,8 @@ const resolvers = {
 
       // only add if not already friend
       const friends = user.friends.map((m) => m._id.toString());
-      for (let friendId of friends) {
-        if (!user.friends.includes(friendId)) {
-          user.friends.push(mongoose.Types.ObjectId(friendId));
-        }
+      if (!friends.includes(userId)) {
+        user.friends.push(mongoose.Types.ObjectId(userId));
       }
 
       const _user = await user.save();

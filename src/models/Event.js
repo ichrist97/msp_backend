@@ -51,7 +51,7 @@ const EventSchema = new mongoose.Schema(
     ],
     komyuniti: {
       type: mongoose.Schema.ObjectId,
-      ref: "komyuniti",
+      ref: "Komyuniti",
     },
   },
   { timestamps: true }
@@ -105,6 +105,21 @@ EventSchema.pre("findOne", autoPopulateMembers)
   .pre("findById", autoPopulateMembers)
   .post("save", function (doc, next) {
     doc.populate("members").execPopulate(function () {
+      next();
+    });
+  });
+
+// always admin user
+const autoPopulateAdmin = function (next) {
+  this.populate("admin");
+  next();
+};
+
+EventSchema.pre("findOne", autoPopulateAdmin)
+  .pre("find", autoPopulateAdmin)
+  .pre("findById", autoPopulateAdmin)
+  .post("save", function (doc, next) {
+    doc.populate("admin").execPopulate(function () {
       next();
     });
   });

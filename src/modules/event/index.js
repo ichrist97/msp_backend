@@ -141,13 +141,10 @@ const resolvers = {
 
       // only add member if not already is member
       const members = event.members.map((m) => m._id.toString());
-      for (let memberId of members) {
-        if (!event.members.includes(memberId)) {
-          event.members.push(mongoose.Types.ObjectId(memberId));
-        }
+      if (!members.includes(userId)) {
+        event.members.push(mongoose.Types.ObjectId(userId));
       }
 
-      event.members.push(userId);
       const _event = await event.save();
 
       return _event;

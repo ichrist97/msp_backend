@@ -59,4 +59,4 @@ KomyunitiSchema.pre("findOne", autoPopulateAdmin)
     });
   });
 
-export default mongoose.model("komyuniti", KomyunitiSchema);
+export default mongoose.model("Komyuniti", KomyunitiSchema);
