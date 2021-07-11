@@ -141,7 +141,14 @@ const resolvers = {
         throw new Error("User does not exist");
       });
 
-      user.friends.push(userId);
+      // only add if not already friend
+      const friends = user.friends.map((m) => m._id.toString());
+      for (let friendId of friends) {
+        if (!user.friends.includes(friendId)) {
+          user.friends.push(mongoose.Types.ObjectId(friendId));
+        }
+      }
+
       const _user = await user.save();
       return _user;
     },
