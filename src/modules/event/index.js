@@ -101,7 +101,7 @@ const resolvers = {
     async createEvent(_, { input }, { user }) {
       const { komyunitiId, date, name } = input;
       const eventCreateObj = {
-        komyuniti: komyunitiId !== undefined ? komyunitiId : null,
+        komyuniti: komyunitiId !== undefined ? mongoose.Types.ObjectId(komyunitiId) : null,
         date: new Date(date),
         name: name,
         createdAt: new Date(),

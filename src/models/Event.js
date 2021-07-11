@@ -51,7 +51,7 @@ const EventSchema = new mongoose.Schema(
     ],
     komyuniti: {
       type: mongoose.Schema.ObjectId,
-      ref: "Komyuniti",
+      ref: "komyuniti",
     },
   },
   { timestamps: true }
