@@ -59,7 +59,7 @@ const EventSchema = new mongoose.Schema(
 
 // Geocode & create location field
 EventSchema.pre("save", async function (next) {
-  if (!this.isModified("address") || this.address == null) {
+  if (!this.isModified("address") || this.address == null || this.address === "") {
     next();
   }
   const loc = await geocoder.geocode(this.address);
